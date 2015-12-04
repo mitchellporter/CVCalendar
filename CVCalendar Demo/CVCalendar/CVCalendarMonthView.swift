@@ -39,6 +39,7 @@ public final class CVCalendarMonthView: UIView {
     
     public var potentialSize: CGSize {
         get {
+            print("potential size height: \(CGFloat(weekViews.count) * weekViews[0].bounds.height + calendarView.appearance.spaceBetweenWeekViews! * CGFloat(weekViews.count))")
             return CGSizeMake(bounds.width, CGFloat(weekViews.count) * weekViews[0].bounds.height + calendarView.appearance.spaceBetweenWeekViews! * CGFloat(weekViews.count))
         }
     }
@@ -105,7 +106,11 @@ extension CVCalendarMonthView {
 extension CVCalendarMonthView {
     public func updateAppearance(frame: CGRect) {
         self.frame = frame
+//        self.frame = CGRectMake(0, 0, 560, 150)
         createWeekViews()
+        
+        layer.borderWidth = 1
+        layer.borderColor = UIColor.greenColor().CGColor
     }
     
     public func createWeekViews() {
@@ -133,7 +138,11 @@ extension CVCalendarMonthView {
             let mode = self.calendarView!.calendarMode!
             if mode == .MonthView {
                 if let interactiveView = self.interactiveView {
-                    interactiveView.frame = self.bounds
+                    
+                    print("Interactive view frame still 250 sometimes?: \(self.bounds)")
+                    let interactiveViewFrame = CGRectMake(self.bounds.origin.x, self.bounds.origin.y, self.bounds.size.width, 300)
+                    interactiveView.frame = interactiveViewFrame
+//                    interactiveView.frame = self.bounds
                     interactiveView.removeFromSuperview()
                     self.addSubview(interactiveView)
                 } else {

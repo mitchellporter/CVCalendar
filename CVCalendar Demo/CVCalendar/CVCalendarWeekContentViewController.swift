@@ -121,7 +121,9 @@ public final class CVCalendarWeekContentViewController: CVCalendarContentViewCon
         super.updateFrames(rect)
         
         for monthView in monthViews.values {
-            monthView.reloadViewsWithRect(rect != CGRectZero ? rect : scrollView.bounds)
+            let updateRect = CGRectMake(scrollView.bounds.origin.x, scrollView.bounds.origin.y, scrollView.bounds.size.width, scrollView.bounds.size.height/2)
+            monthView.reloadViewsWithRect(rect != CGRectZero ? rect : updateRect)
+//            monthView.reloadViewsWithRect(rect != CGRectZero ? rect : scrollView.bounds)
         }
         
         reloadWeekViews()

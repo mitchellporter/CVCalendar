@@ -22,7 +22,8 @@ public class CVCalendarContentViewController: UIViewController {
     public var presentedMonthView: MonthView
     
     public var bounds: CGRect {
-        return scrollView.bounds
+        return CGRectMake(scrollView.bounds.origin.x, scrollView.bounds.origin.y, scrollView.bounds.size.width, scrollView.bounds.size.height/2)
+//        return scrollView.bounds
     }
     
     public var currentPage = 1
@@ -39,18 +40,36 @@ public class CVCalendarContentViewController: UIViewController {
     
     public init(calendarView: CalendarView, frame: CGRect) {
         self.calendarView = calendarView
-        scrollView = UIScrollView(frame: frame)
+        scrollView = UIScrollView(frame: calendarView.frame)
+
+//        scrollView = UIScrollView(frame: frame)
+        
+        // Calendar view has same frame as scrollview
+        
+        print("Calendar view frame: \(calendarView.frame)")
+        print("scroll view frame: \(scrollView.frame)")
+        
         presentedMonthView = MonthView(calendarView: calendarView, date: NSDate())
+        
+        
+        // Presented month view also uses the same frame
         presentedMonthView.updateAppearance(frame)
         
         super.init(nibName: nil, bundle: nil)
         
-        scrollView.contentSize = CGSizeMake(frame.width * 3, frame.height)
+        scrollView.contentSize = CGSizeMake(frame.width * 3, calendarView.frame.height)
+//        scrollView.contentSize = CGSizeMake(frame.width * 3, frame.height)
+        print("scrollview content size: \(scrollView.contentSize)")
+//        scrollView.contentSize = CGSizeMake(frame.width * 3, 500)
+
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
         scrollView.layer.masksToBounds = true
         scrollView.pagingEnabled = true
         scrollView.delegate = self
+        
+        scrollView.layer.borderWidth = 2
+        scrollView.layer.borderColor = UIColor.redColor().CGColor
     }
     
     public required init?(coder aDecoder: NSCoder) {
@@ -63,8 +82,12 @@ public class CVCalendarContentViewController: UIViewController {
 extension CVCalendarContentViewController {
     public func updateFrames(frame: CGRect) {
         if frame != CGRectZero {
+            print("scrollview frame: \(scrollView.frame)")
+
             scrollView.frame = frame
+//            scrollView.frame = CGRectMake(frame.origin.x, frame.origin.y, frame.size.width * 3, frame.size.height + 200)
             scrollView.removeAllSubviews()
+//            scrollView.contentSize = CGSizeMake(frame.size.width * 3, 500)
             scrollView.contentSize = CGSizeMake(frame.size.width * 3, frame.size.height)
         }
         
@@ -194,7 +217,7 @@ extension CVCalendarContentViewController {
 
 extension CVCalendarContentViewController {
     private func layoutViews(views: [UIView], toHeight height: CGFloat) {
-        scrollView.frame.size.height = height
+//        scrollView.frame.size.height = height
         
         var superStack = [UIView]()
         var currentView: UIView = calendarView
@@ -222,12 +245,13 @@ extension CVCalendarContentViewController {
             
             
             for constraintIn in calendarView.constraints where constraintIn.firstAttribute == NSLayoutAttribute.Height {
-                constraintIn.constant = height
+//                constraintIn.constant = height
                 
                 if animated {
                     UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.CurveLinear, animations: {
                         self.layoutViews(viewsToLayout, toHeight: height)
                         }) { _ in
+                            print("presented month view potential size: \(self.presentedMonthView.potentialSize)")
                             self.presentedMonthView.frame.size = self.presentedMonthView.potentialSize
                             self.presentedMonthView.updateInteractiveView()
                     }
@@ -235,6 +259,9 @@ extension CVCalendarContentViewController {
                     layoutViews(viewsToLayout, toHeight: height)
                     presentedMonthView.updateInteractiveView()
                     presentedMonthView.frame.size = presentedMonthView.potentialSize
+//                    presentedMonthView.frame.size = CGSizeMake(343, 150)
+//                    presentedMonthView.clipsToBounds = true
+                    print("presented month view potential size: \(self.presentedMonthView.potentialSize)")
                     presentedMonthView.updateInteractiveView()
                 }
                 

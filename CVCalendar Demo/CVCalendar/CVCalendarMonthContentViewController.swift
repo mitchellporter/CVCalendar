@@ -21,7 +21,9 @@ public final class CVCalendarMonthContentViewController: CVCalendarContentViewCo
         monthViews = [Identifier : MonthView]()
         super.init(calendarView: calendarView, frame: frame)
         presentedMonthView = MonthView(calendarView: calendarView, date: presentedDate)
-        presentedMonthView.updateAppearance(scrollView.bounds)
+        let updatedRect = CGRectMake(scrollView.bounds.origin.x, scrollView.bounds.origin.y, scrollView.bounds.size.width, scrollView.bounds.size.height/2)
+        presentedMonthView.updateAppearance(updatedRect)
+//        presentedMonthView.updateAppearance(scrollView.bounds)
         initialLoad(presentedDate)
     }
     
@@ -48,8 +50,10 @@ public final class CVCalendarMonthContentViewController: CVCalendarContentViewCo
     }
     
     public func reloadMonthViews() {
+        
         for (identifier, monthView) in monthViews {
             monthView.frame.origin.x = CGFloat(indexOfIdentifier(identifier)) * scrollView.frame.width
+            print("reloadMonthViews frame: \(monthView.frame)")
             monthView.removeFromSuperview()
             scrollView.addSubview(monthView)
         }
@@ -116,7 +120,9 @@ public final class CVCalendarMonthContentViewController: CVCalendarContentViewCo
         super.updateFrames(rect)
         
         for monthView in monthViews.values {
-            monthView.reloadViewsWithRect(rect != CGRectZero ? rect : scrollView.bounds)
+//            let reloadRect = rect != CGRectZero ? rect : scrollView.bounds
+            let reloadRect = rect != CGRectZero ? rect : CGRectMake(scrollView.bounds.origin.x, scrollView.bounds.origin.y, scrollView.bounds.size.width, scrollView.bounds.size.height/2)
+            monthView.reloadViewsWithRect(reloadRect)
         }
         
         reloadMonthViews()
@@ -259,7 +265,8 @@ extension CVCalendarMonthContentViewController {
         components.month += 1
         
         let newDate = NSCalendar.currentCalendar().dateFromComponents(components)!
-        let frame = scrollView.bounds
+//        let frame = scrollView.bounds
+        let frame = CGRectMake(scrollView.bounds.origin.x, scrollView.bounds.origin.y, scrollView.bounds.size.width, scrollView.bounds.size.height/2)
         let monthView = MonthView(calendarView: calendarView, date: newDate)
         
         monthView.updateAppearance(frame)
@@ -274,7 +281,8 @@ extension CVCalendarMonthContentViewController {
         components.month -= 1
         
         let newDate = NSCalendar.currentCalendar().dateFromComponents(components)!
-        let frame = scrollView.bounds
+//        let frame = scrollView.bounds
+        let frame = CGRectMake(scrollView.bounds.origin.x, scrollView.bounds.origin.y, scrollView.bounds.size.width, scrollView.bounds.size.height/2)
         let monthView = MonthView(calendarView: calendarView, date: newDate)
         
         monthView.updateAppearance(frame)

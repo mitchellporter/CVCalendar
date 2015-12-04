@@ -206,7 +206,8 @@ extension CVCalendarView {
     public func commitCalendarViewUpdate() {
         if let _ = delegate, let contentController = contentController {
             let contentViewSize = contentController.bounds.size
-            let selfSize = bounds.size
+            let selfSize = CGSizeMake(bounds.size.width , bounds.size.height/2)
+//            let selfSize = bounds.size
             let screenSize = UIScreen.mainScreen().bounds.size
             
             let allowed = selfSize.width <= screenSize.width && selfSize.height <= screenSize.height
@@ -223,8 +224,10 @@ extension CVCalendarView {
                     switch mode {
                     case .WeekView:
                         height = selfSize.height
+                        
                     case .MonthView :
                         height = (selfSize.height / countOfWeeks) - (vSpace * countOfWeeks)
+                        
                     }
                     
                     // If no height constraint found we set it manually.
@@ -243,7 +246,10 @@ extension CVCalendarView {
                     dayViewSize = CGSizeMake((width / 7.0) - hSpace, height)
                     validated = true
                     
-                    contentController.updateFrames(selfSize != contentViewSize ? bounds : CGRectZero)
+//                    let updateRect = selfSize != contentViewSize ? bounds : CGRectZero
+                    let updateRect = selfSize != contentViewSize ? CGRectMake(bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height/2) : CGRectZero
+
+                    contentController.updateFrames(updateRect)
                 }
             }
         }
@@ -299,8 +305,9 @@ extension CVCalendarView {
                 newController = MonthContentViewController(calendarView: self, frame: bounds, presentedDate: selectedDate)
             }
             
-            
-            newController.updateFrames(bounds)
+            let updateRect = CGRectMake(bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height/2)
+            newController.updateFrames(updateRect)
+//            newController.updateFrames(bounds)
             newController.scrollView.alpha = 0
             addSubview(newController.scrollView)
             
@@ -324,8 +331,15 @@ private extension CVCalendarView {
         if let delegate = delegate {
             calendarMode = delegate.presentationMode()
             switch delegate.presentationMode() {
-                case .MonthView: contentController = MonthContentViewController(calendarView: self, frame: bounds)
-                case .WeekView: contentController = WeekContentViewController(calendarView: self, frame: bounds)
+            case .MonthView:
+                print("bounds: \(bounds)")
+                let monthRect = CGRectMake(bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height/2)
+                contentController = MonthContentViewController(calendarView: self, frame: monthRect)
+// contentController = MonthContentViewController(calendarView: self, frame: bounds)
+                case .WeekView:
+                    let weekRect = CGRectMake(bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height/2)
+                    contentController = WeekContentViewController(calendarView: self, frame: weekRect)
+//                    contentController = WeekContentViewController(calendarView: self, frame: bounds)
             }
             
             addSubview(contentController.scrollView)
